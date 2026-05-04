@@ -28,11 +28,20 @@ def test_hidden_engine_reports_missing_weights(sample_image: np.ndarray) -> None
         engine.decode(sample_image)
 
 
+def _require_onnx_export_stack() -> None:
+    import importlib
+    try:
+        importlib.import_module("onnxscript")
+    except Exception as exc:
+        pytest.skip(f"onnx export stack unavailable: {exc}")
+
+
 def test_hidden_engine_round_trip_with_onnx_models(
     tmp_path: Path, sample_image: np.ndarray
 ) -> None:
     torch = pytest.importorskip("torch")
     ort = pytest.importorskip("onnxruntime")
+    _require_onnx_export_stack()
     try:
         import ml_dtypes  # noqa: F401
         ml_dtypes.float4_e2m1fn
@@ -57,6 +66,7 @@ def test_hidden_engine_rejects_messages_beyond_model_capacity(
 ) -> None:
     torch = pytest.importorskip("torch")
     pytest.importorskip("onnxruntime")
+    _require_onnx_export_stack()
     try:
         import ml_dtypes  # noqa: F401
         ml_dtypes.float4_e2m1fn

@@ -30,6 +30,7 @@ def test_config_writer_escapes_windows_like_paths(tmp_path: Path) -> None:
 
 
 def test_hidden_engine_initializes_session_only_once_under_concurrency(monkeypatch) -> None:
+    pytest.importorskip("onnxruntime")
     engine = HiddenEngine(model_dir=Path("models"))
     calls: list[Path] = []
 
