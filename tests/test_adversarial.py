@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 import pytest
+
 try:
-    import torch, torch.nn as nn
+    import torch
+    import torch.nn as nn
     TORCH_OK=True
 except ImportError:
     TORCH_OK=False

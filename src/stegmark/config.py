@@ -114,7 +114,9 @@ def load_config(*, config_path: Path | None = None) -> StegMarkConfig:
     values.update(_environment_overrides())
     model_dir = cast(Path, values["model_dir"])
     hidden_model_dir_value = values["engines.hidden.model_dir"]
-    hidden_model_dir = model_dir / "hidden" if hidden_model_dir_value is _MISSING else cast(Path, hidden_model_dir_value)
+    hidden_model_dir = (
+        model_dir / "hidden" if hidden_model_dir_value is _MISSING else cast(Path, hidden_model_dir_value)
+    )
     return StegMarkConfig(
         engine=cast(str, values["engine"]),
         strength=cast(float, values["strength"]),

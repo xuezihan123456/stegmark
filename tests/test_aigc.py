@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 import numpy as np
-from stegmark.core.aigc_fingerprint import AIGCMetadata, stamp_image, extract_aigc_metadata, compute_prompt_hash
+
+from stegmark.core.aigc_fingerprint import AIGCMetadata, compute_prompt_hash, extract_aigc_metadata, stamp_image
 from stegmark.core.native import NativeEngine
+
 
 def _img(h,w): return np.random.default_rng(42).integers(30,220,(h,w,3)).astype(np.uint8)
 

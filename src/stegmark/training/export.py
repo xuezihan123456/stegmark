@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import importlib
 from pathlib import Path
-from typing import Optional
 
 import torch
 
@@ -27,8 +26,8 @@ def export_hidden_onnx(
     encoder_output: Path,
     decoder_output: Path,
     image_size: int = 128,
-    encoder_ckpt: Optional[Path] = None,
-    decoder_ckpt: Optional[Path] = None,
+    encoder_ckpt: Path | None = None,
+    decoder_ckpt: Path | None = None,
 ) -> tuple[Path, Path]:
     _ensure_onnx_export_stack()
 

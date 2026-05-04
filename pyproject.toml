@@ -107,3 +107,10 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E702", "E701", "E501", "B018", "B017"]
+"src/stegmark/__init__.py" = ["E402", "F401"]
+"src/stegmark/wasm/*" = ["E402"]
+"src/stegmark/core/zk_proof.py" = ["E701", "E501"]
+"src/stegmark/core/provenance.py" = ["E501"]

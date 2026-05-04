@@ -1,6 +1,10 @@
 from __future__ import annotations
-import numpy as np, pytest
+
+import numpy as np
+import pytest
+
 from stegmark.core.screen_resilient import ScreenResilientEngine
+
 
 def _img(h,w): return np.random.default_rng(42).integers(30,220,(h,w,3)).astype(np.uint8)
 

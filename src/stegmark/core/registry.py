@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from functools import lru_cache
+from functools import cache, lru_cache
 from importlib import import_module, metadata
 
 from stegmark.core.engine import WatermarkEngine
@@ -58,7 +58,7 @@ def clear_engine_cache() -> None:
     _entry_point_map.cache_clear()
 
 
-@lru_cache(maxsize=None)
+@cache
 def _build_engine(name: str) -> WatermarkEngine:
     return _instantiate_engine(_resolve_factory(name))
 

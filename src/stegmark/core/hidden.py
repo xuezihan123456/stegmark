@@ -143,7 +143,9 @@ class HiddenEngine(WatermarkEngine):
         try:
             return ort.InferenceSession(str(path), providers=providers)
         except Exception:
-            fallback_providers = list(resolve_hidden_execution_providers(("CPUExecutionProvider",), available_providers))
+            fallback_providers = list(
+                resolve_hidden_execution_providers(("CPUExecutionProvider",), available_providers)
+            )
             if providers == fallback_providers:
                 raise
             return ort.InferenceSession(str(path), providers=fallback_providers)

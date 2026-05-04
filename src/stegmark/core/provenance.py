@@ -6,7 +6,7 @@ from typing import Any
 
 import numpy as np
 
-from stegmark.core.codec import encode_text, decode_bitstream
+from stegmark.core.codec import decode_bitstream, encode_text
 from stegmark.exceptions import MessageTooLongError
 
 PROVENANCE_LAYERS: list[tuple[tuple[int,int], tuple[int,int]]] = [
@@ -90,9 +90,11 @@ def multi_layer_embed(image, entries, *, strength=1.0):
         delta = max(2.0, BASE_DELTA * strength * (ei+1) / MAX_PROVENANCE_LAYERS)
         bi = 0
         for r in range(br):
-            if bi >= len(bits): break
+            if bi >= len(bits):
+                break
             for c in range(bc):
-                if bi >= len(bits): break
+                if bi >= len(bits):
+                    break
                 y0, y1 = r*BLOCK_SIZE, (r+1)*BLOCK_SIZE
                 x0, x1 = c*BLOCK_SIZE, (c+1)*BLOCK_SIZE
                 blk = yr[y0:y1, x0:x1].astype(np.float64)

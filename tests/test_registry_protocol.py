@@ -1,6 +1,11 @@
 from __future__ import annotations
-import sqlite3, numpy as np
+
+import sqlite3
+
+import numpy as np
+
 from stegmark.core.registry_protocol import WatermarkRegistration, compute_image_hash, generate_watermark_id
+
 
 class TestRegistration:
     def test_roundtrip(self):

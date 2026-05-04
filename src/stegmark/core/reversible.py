@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from stegmark.core.codec import decode_bitstream, resolve_payload_bits
 from stegmark.core.engine import WatermarkEngine
-from stegmark.core.codec import resolve_payload_bits, decode_bitstream
 from stegmark.exceptions import InvalidInputError
 from stegmark.types import ExtractResult, ImageArray
 

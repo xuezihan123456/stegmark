@@ -1,7 +1,18 @@
 from __future__ import annotations
-import numpy as np, pytest
-from stegmark.core.provenance import (ProvenanceEntry,ProvenanceChain,multi_layer_embed,multi_layer_extract,build_provenance_entry,MAX_PROVENANCE_LAYERS)
+
+import numpy as np
+import pytest
+
+from stegmark.core.provenance import (
+    MAX_PROVENANCE_LAYERS,
+    ProvenanceChain,
+    ProvenanceEntry,
+    build_provenance_entry,
+    multi_layer_embed,
+    multi_layer_extract,
+)
 from stegmark.exceptions import MessageTooLongError
+
 
 def _img(h,w): return np.random.default_rng(42).integers(30,220,(h,w,3)).astype(np.uint8)
 

@@ -54,7 +54,7 @@ def main() -> int:
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     no_improve_count = 0
-    prev_decoder_loss = float("inf")
+    float("inf")
 
     for epoch in range(1, args.epochs + 1):
         epoch_losses: list[dict] = []
@@ -92,7 +92,6 @@ def main() -> int:
                 break
         else:
             no_improve_count = 0
-        prev_decoder_loss = decoder_loss
 
     torch.save(trainer.encoder.state_dict(), args.output_dir / "encoder_final.pt")
     torch.save(trainer.decoder.state_dict(), args.output_dir / "decoder_final.pt")

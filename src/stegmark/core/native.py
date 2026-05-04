@@ -138,7 +138,9 @@ def _usable_dimensions(height: int, width: int) -> tuple[int, int]:
     return height - (height % BLOCK_SIZE), width - (width % BLOCK_SIZE)
 
 
-def _block_indices(count: int, block_cols: int) -> tuple[np.ndarray[tuple[int], np.dtype[np.intp]], np.ndarray[tuple[int], np.dtype[np.intp]]]:
+def _block_indices(
+    count: int, block_cols: int
+) -> tuple[np.ndarray[tuple[int], np.dtype[np.intp]], np.ndarray[tuple[int], np.dtype[np.intp]]]:
     indices = np.arange(count, dtype=np.intp)
     return indices // block_cols, indices % block_cols
 

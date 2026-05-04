@@ -5,8 +5,9 @@ from __future__ import annotations
 import importlib.util
 import sys
 import types
+from collections.abc import Callable
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from stegmark.core.registry import get_engine, registered_engines
 from stegmark.core.weights import available_engines, device_info, is_available
@@ -42,13 +43,13 @@ _install_benchmark_stub()
 from stegmark.service import (
     benchmark_compare_service,
     benchmark_file_service,
-    embed_directory as embed_directory_service,
-)
-from stegmark.service import (
     embed_file,
     extract_file,
     info_file,
     verify_file,
+)
+from stegmark.service import (
+    embed_directory as embed_directory_service,
 )
 from stegmark.service import (
     extract_directory as extract_directory_service,

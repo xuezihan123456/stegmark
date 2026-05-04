@@ -1,7 +1,18 @@
 from __future__ import annotations
+
 import numpy as np
-from stegmark.core.zk_proof import (ZKCommitment,ZKProof,generate_salt,compute_commitment,generate_zk_commitment,embed_with_zk,prove_ownership,verify_zk_proof)
+
 from stegmark.core.native import NativeEngine
+from stegmark.core.zk_proof import (
+    ZKCommitment,
+    ZKProof,
+    compute_commitment,
+    embed_with_zk,
+    generate_salt,
+    prove_ownership,
+    verify_zk_proof,
+)
+
 
 def _img(h,w): return np.random.default_rng(42).integers(30,220,(h,w,3)).astype(np.uint8)
 

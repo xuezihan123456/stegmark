@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import hashlib, secrets
+import hashlib
+import secrets
 from dataclasses import dataclass
-from stegmark.types import ImageArray
 
 
 @dataclass(frozen=True)
@@ -11,7 +11,8 @@ class ZKCommitment:
     salt: str
     engine: str
     def to_json(self) -> str:
-        import json; return json.dumps({"commitment":self.commitment,"salt":self.salt,"engine":self.engine})
+        import json
+        return json.dumps({"commitment": self.commitment, "salt": self.salt, "engine": self.engine})
 
 
 @dataclass(frozen=True)
@@ -21,15 +22,28 @@ class ZKProof:
     message_hash: str
     proof_data: dict[str,str]
     def to_json(self) -> str:
-        import json; return json.dumps({"commitment":self.commitment,"salt_hash":self.salt_hash,"message_hash":self.message_hash,"proof_data":self.proof_data})
+        import json
+        return json.dumps({
+            "commitment": self.commitment,
+            "salt_hash": self.salt_hash,
+            "message_hash": self.message_hash,
+            "proof_data": self.proof_data,
+        })
+
     @classmethod
     def from_json(cls, json_str: str) -> ZKProof:
-        import json; d = json.loads(json_str)
-        return cls(commitment=d["commitment"], salt_hash=d["salt_hash"], message_hash=d["message_hash"], proof_data=d.get("proof_data",{}))
+        import json
+        d = json.loads(json_str)
+        return cls(
+            commitment=d["commitment"],
+            salt_hash=d["salt_hash"],
+            message_hash=d["message_hash"],
+            proof_data=d.get("proof_data", {}),
+        )
 
 
 def generate_salt() -> str: return secrets.token_hex(32)
-def compute_commitment(message: str, salt: str) -> str: return hashlib.sha256(f"{message}:{salt}".encode("utf-8")).hexdigest()
+def compute_commitment(message: str, salt: str) -> str: return hashlib.sha256(f"{message}:{salt}".encode()).hexdigest()
 
 
 def generate_zk_commitment(message: str, engine_name: str) -> ZKCommitment:

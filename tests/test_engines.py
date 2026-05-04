@@ -8,8 +8,7 @@ import pytest
 from stegmark.core import registry
 from stegmark.core.engine import WatermarkEngine
 from stegmark.core.hidden import HiddenEngine
-from stegmark.core.native import NativeEngine
-from stegmark.core.native import _block_view, _dct_matrix, _iter_blocks
+from stegmark.core.native import NativeEngine, _block_view, _dct_matrix, _iter_blocks
 from stegmark.core.registry import get_engine
 from stegmark.core.trustmark import TrustMarkEngine
 from stegmark.types import ExtractResult

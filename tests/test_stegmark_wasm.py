@@ -1,6 +1,9 @@
 from __future__ import annotations
+
 import numpy as np
-from stegmark.wasm.stegmark_wasm import embed_image, extract_message, _encode_text_wasm, _decode_frame_wasm
+
+from stegmark.wasm.stegmark_wasm import _decode_frame_wasm, _encode_text_wasm, embed_image, extract_message
+
 
 def _px(h,w):
     rng=np.random.default_rng(42); arr=rng.integers(30,220,(h,w,3)).astype(np.uint8)

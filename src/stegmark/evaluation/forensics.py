@@ -5,8 +5,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw
 
-from stegmark.core.native import BLOCK_SIZE, COEFF_A, COEFF_B, FloatArray, _block_view, _dct2, _rgb_to_ycbcr
 from stegmark.core.image_io import load_image
+from stegmark.core.native import BLOCK_SIZE, COEFF_A, COEFF_B, _block_view, _dct2, _rgb_to_ycbcr
 from stegmark.types import ImageArray
 
 

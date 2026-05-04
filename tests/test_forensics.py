@@ -1,8 +1,18 @@
 from __future__ import annotations
-import tempfile, numpy as np
+
+import tempfile
 from pathlib import Path
+
+import numpy as np
 from PIL import Image
-from stegmark.evaluation.forensics import generate_diff_heatmap, generate_dct_modification_map, generate_frequency_analysis, generate_full_report
+
+from stegmark.evaluation.forensics import (
+    generate_dct_modification_map,
+    generate_diff_heatmap,
+    generate_frequency_analysis,
+    generate_full_report,
+)
+
 
 def _img(h,w): return np.random.default_rng(42).integers(30,220,(h,w,3)).astype(np.uint8)
 def _mod(img,d=5): return np.clip(img.astype(np.int32)+d,0,255).astype(np.uint8)

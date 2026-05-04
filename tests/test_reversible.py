@@ -1,7 +1,11 @@
 from __future__ import annotations
-import numpy as np, pytest
+
+import numpy as np
+import pytest
+
 from stegmark.core.reversible import ReversibleEngine
 from stegmark.exceptions import InvalidInputError
+
 
 def _img(h,w): return np.random.default_rng(42).integers(50,200,(h,w,3)).astype(np.uint8)
 

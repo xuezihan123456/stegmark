@@ -5,9 +5,7 @@ import tempfile
 from pathlib import Path
 from types import MappingProxyType
 
-import numpy as np
 import pytest
-from PIL import Image
 
 from stegmark.core.image_io import MAX_FILE_SIZE_BYTES, load_image
 from stegmark.exceptions import InvalidInputError

@@ -9,11 +9,8 @@ from stegmark.core.codec import encode_text
 from stegmark.core.image_io import load_image
 from stegmark.core.registry import get_engine
 from stegmark.evaluation.attacks import AVAILABLE_ATTACKS, apply_attack
-from stegmark.evaluation.metrics import compute_bit_accuracy, compute_psnr
+from stegmark.evaluation.metrics import compute_psnr
 from stegmark.evaluation.reports import (
-    benchmark_csv_text,
-    comparison_csv_text,
-    comparison_html,
     render_benchmark_comparison_report,
     render_benchmark_report,
 )
@@ -226,7 +223,7 @@ def _render_comparison_report(result: BenchmarkComparisonResult, report_format: 
 
 
 def _bit_accuracy(expected: tuple[int, ...], actual: tuple[int, ...]) -> float:
-    correct = sum(a == e for a, e in zip(actual, expected))
+    correct = sum(a == e for a, e in zip(actual, expected, strict=False))
     return correct / max(len(actual), len(expected))
 
 

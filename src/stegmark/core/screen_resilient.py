@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 import numpy as np
 
-from stegmark.core.engine import EngineCapabilities, WatermarkEngine
 from stegmark.core.codec import decode_bitstream, resolve_payload_bits
+from stegmark.core.engine import EngineCapabilities, WatermarkEngine
 from stegmark.exceptions import MessageTooLongError
 from stegmark.types import ExtractResult, ImageArray
 

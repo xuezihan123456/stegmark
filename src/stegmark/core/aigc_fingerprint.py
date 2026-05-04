@@ -6,13 +6,8 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
-import numpy as np
-
 from stegmark.core.engine import WatermarkEngine
-from stegmark.core.codec import encode_text
-from stegmark.exceptions import InvalidInputError
 from stegmark.types import ImageArray
-
 
 AIGC_FRAME_TYPE: int = 0x03  # 帧协议中的 AIGC_METADATA 类型标记
 
@@ -71,7 +66,7 @@ class AIGCMetadata:
         if self.custom:
             assertion["data"]["custom"] = self.custom
         return {
-            "claim_generator": f"StegMark-AIGC/1.0",
+            "claim_generator": "StegMark-AIGC/1.0",
             "assertions": [assertion],
         }
 

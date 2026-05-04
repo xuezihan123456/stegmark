@@ -40,7 +40,7 @@ def test_hidden_engine_round_trip_with_onnx_models(
     tmp_path: Path, sample_image: np.ndarray
 ) -> None:
     torch = pytest.importorskip("torch")
-    ort = pytest.importorskip("onnxruntime")
+    pytest.importorskip("onnxruntime")
     _require_onnx_export_stack()
     try:
         import ml_dtypes  # noqa: F401
