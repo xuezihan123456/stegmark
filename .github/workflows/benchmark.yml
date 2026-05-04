@@ -1,0 +1,51 @@
+name: Benchmark
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * 1"
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .[dev]
+
+      - name: Create sample image
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import numpy as np
+          from PIL import Image
+          axis = np.linspace(0, 255, 128, dtype=np.uint8)
+          grid_x, grid_y = np.meshgrid(axis, axis)
+          image = np.stack([grid_x, grid_y, np.full_like(grid_x, 96)], axis=2)
+          Image.fromarray(image, mode="RGB").save(Path("benchmark-input.png"))
+          PY
+
+      - name: Run benchmark
+        run: |
+          mkdir -p benchmark-report
+          stegmark benchmark benchmark-input.png -m "CI 2026" --attacks jpeg_q90,brightness_1.3 --output-dir benchmark-report --json > benchmark-report/output.json
+
+      - name: Check benchmark gate
+        run: |
+          python scripts/check_benchmark_gate.py --report benchmark-report/benchmark.json --min-average-bit-accuracy 0.9
+
+      - name: Upload benchmark artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-report
+          path: benchmark-report/

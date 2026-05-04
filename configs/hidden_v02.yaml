@@ -1,0 +1,8 @@
+message_bits: 32
+image_size: 128
+batch_size: 16
+learning_rate: 0.001
+image_weight: 1.0
+message_weight: 5.0
+device: cpu
+

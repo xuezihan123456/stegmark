@@ -1,0 +1,109 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "stegmark"
+version = "0.3.0a1"
+description = "Lightweight invisible watermark toolkit with benchmark and hidden-engine scaffolding."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+  { name = "StegMark contributors" },
+]
+dependencies = [
+  "numpy>=1.26",
+  "Pillow>=10.0",
+  "click>=8.1",
+  "rich>=13.0",
+  "tomli>=2.0",
+  "tomli-w>=1.0",
+]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2",
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "mypy>=1.10",
+  "ruff>=0.5",
+]
+hidden = [
+  "onnxruntime>=1.19",
+]
+train = [
+  "torch>=2.0",
+  "torchvision>=0.15",
+  "onnxruntime>=1.19",
+  "onnxscript>=0.2",
+]
+gpu = [
+  "onnxruntime-gpu>=1.19",
+]
+trustmark = [
+  "trustmark>=0.9.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/stegmark/stegmark"
+Repository = "https://github.com/stegmark/stegmark"
+
+[project.scripts]
+stegmark = "stegmark.cli:main"
+
+[project.entry-points."stegmark.engines"]
+native = "stegmark.core.native:NativeEngine"
+hidden = "stegmark.core.hidden:HiddenEngine"
+trustmark = "stegmark.core.trustmark:TrustMarkEngine"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/stegmark"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/LICENSE",
+  "/README.md",
+  "/configs",
+  "/docs",
+  "/pyproject.toml",
+  "/scripts",
+  "/src/stegmark",
+  "/tests",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [
+  ".*",
+  "_pt*",
+  "_pytest*",
+  "_tmp*",
+  "bench-manual-*",
+]
+markers = [
+  "slow: tests that require optional runtimes or longer end-to-end execution",
+]
+
+[tool.mypy]
+python_version = "3.10"
+packages = ["stegmark"]
+strict = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

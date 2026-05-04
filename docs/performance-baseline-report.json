@@ -1,0 +1,39 @@
+{
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Windows-11-10.0.22631-SP0",
+    "image_shape": [
+      512,
+      512,
+      3
+    ],
+    "payload_bits": 2048,
+    "payload_bytes_for_codec": 16384
+  },
+  "codec_bytes_to_bits": {
+    "legacy": {
+      "mean_ms": 13.629387511173263,
+      "median_ms": 13.590550021035597,
+      "min_ms": 12.21570000052452
+    },
+    "current": {
+      "mean_ms": 0.7053875015117228,
+      "median_ms": 0.666900014039129,
+      "min_ms": 0.6327999872155488
+    },
+    "speedup_x": 19.321844350749043
+  },
+  "native_encode_512": {
+    "legacy": {
+      "mean_ms": 25.94173751276685,
+      "median_ms": 25.767050014110282,
+      "min_ms": 24.944600008893758
+    },
+    "current": {
+      "mean_ms": 15.378112489997875,
+      "median_ms": 14.92784998845309,
+      "min_ms": 13.933299982454628
+    },
+    "speedup_x": 1.6869259819525766
+  }
+}
