@@ -17,4 +17,13 @@ dist/
 *.pt
 *.log
 .worktrees/
+.omc/
+.omx/
+.claude/
+.tmp-worker-*/
+.pytest-base/
+.pytest-base-python/
+.pytest-base-python2/
+.pytest-tmp/
+.pytest_tmp/
 

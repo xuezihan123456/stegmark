@@ -110,7 +110,6 @@ def decode_bitstream(bits: Sequence[int], *, encoding: str = "utf-8") -> Decoded
 
     version = frame[0]
     payload_length = int.from_bytes(frame[1:3], "big")
-    MAX_PAYLOAD_BYTES = 65536
     if payload_length > MAX_PAYLOAD_BYTES:
         raise InvalidInputError(f"payload too large: {payload_length} bytes", hint=f"Maximum payload is {MAX_PAYLOAD_BYTES} bytes.")
     payload_end = HEADER_BYTES + payload_length

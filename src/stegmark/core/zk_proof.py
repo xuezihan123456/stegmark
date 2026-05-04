@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib, secrets
 from dataclasses import dataclass
-from stegmark.core.engine import WatermarkEngine
 from stegmark.types import ImageArray
 
 

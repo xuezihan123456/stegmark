@@ -6,6 +6,7 @@ from typing import Optional
 
 import torch
 
+from stegmark.logging_utils import logger
 from stegmark.nn.hidden.decoder import HiddenDecoder
 from stegmark.nn.hidden.encoder import HiddenEncoder
 
@@ -36,10 +37,10 @@ def export_hidden_onnx(
 
     if encoder_ckpt is not None:
         encoder.load_state_dict(torch.load(encoder_ckpt, map_location="cpu"))
-        print(f"Loaded encoder from {encoder_ckpt}")
+        logger.info("Loaded encoder from %s", encoder_ckpt)
     if decoder_ckpt is not None:
         decoder.load_state_dict(torch.load(decoder_ckpt, map_location="cpu"))
-        print(f"Loaded decoder from {decoder_ckpt}")
+        logger.info("Loaded decoder from %s", decoder_ckpt)
 
     encoder_output.parent.mkdir(parents=True, exist_ok=True)
     decoder_output.parent.mkdir(parents=True, exist_ok=True)

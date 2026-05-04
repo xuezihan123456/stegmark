@@ -8,7 +8,6 @@ import numpy as np
 
 from stegmark.core.codec import encode_text, decode_bitstream
 from stegmark.exceptions import MessageTooLongError
-from stegmark.types import ImageArray
 
 PROVENANCE_LAYERS: list[tuple[tuple[int,int], tuple[int,int]]] = [
     ((1,2),(2,1)), ((3,2),(2,3)), ((5,4),(4,5)), ((7,6),(6,7)),

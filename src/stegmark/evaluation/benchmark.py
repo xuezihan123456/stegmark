@@ -224,17 +224,6 @@ def _render_comparison_report(result: BenchmarkComparisonResult, report_format: 
     return render_benchmark_comparison_report(result, report_format)
 
 
-def _csv_text(result: BenchmarkResult) -> str:
-    return benchmark_csv_text(result)
-
-
-def _comparison_csv_text(result: BenchmarkComparisonResult) -> str:
-    return comparison_csv_text(result)
-
-
-def _comparison_html(result: BenchmarkComparisonResult) -> str:
-    return comparison_html(result)
-
 
 def _bit_accuracy(expected: tuple[int, ...], actual: tuple[int, ...]) -> float:
     correct = sum(a == e for a, e in zip(actual, expected))
