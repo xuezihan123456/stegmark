@@ -167,7 +167,7 @@ class HiddenEngine(WatermarkEngine):
         scaled = (clipped * 255.0).round().astype(np.uint8)
         height, width = original_shape
         if scaled.shape[:2] == (height, width):
-            return cast(ImageArray, scaled)
+            return scaled
         resized = Image.fromarray(scaled, mode="RGB").resize((width, height), Image.Resampling.BILINEAR)
         return cast(ImageArray, np.asarray(resized, dtype=np.uint8))
 
