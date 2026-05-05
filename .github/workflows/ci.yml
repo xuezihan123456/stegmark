@@ -29,17 +29,24 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -e .[dev]
-          python -m pip install "mypy==1.14.1"
 
       - name: Ruff
         run: python -m ruff check .
 
       - name: Mypy
-        run: python -m mypy --package stegmark
+        run: |
+          set +e
+          python -m mypy src --show-error-codes --show-error-context 2>&1 | tee /tmp/mypy-output.txt
+          MYPY_EXIT=${PIPESTATUS[0]}
+          echo "--- mypy exit code: $MYPY_EXIT ---"
+          if [ $MYPY_EXIT -ne 0 ]; then
+            echo "Mypy failed with exit code $MYPY_EXIT"
+            cat /tmp/mypy-output.txt
+            exit $MYPY_EXIT
+          fi
 
       - name: Pytest
         run: python -m pytest -q
 
       - name: Build
         run: python -m build
-
