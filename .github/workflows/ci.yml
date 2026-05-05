@@ -34,7 +34,7 @@ jobs:
         run: python -m ruff check .
 
       - name: Mypy
-        run: python -m mypy src
+        run: python -m mypy --package stegmark --show-error-codes
 
       - name: Pytest
         run: python -m pytest -q
