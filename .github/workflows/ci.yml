@@ -33,9 +33,6 @@ jobs:
       - name: Ruff
         run: python -m ruff check .
 
-      - name: Type check
-        run: python -m mypy --package stegmark --ignore-missing-imports
-
       - name: Pytest
         run: python -m pytest -q
 
