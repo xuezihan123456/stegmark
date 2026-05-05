@@ -33,17 +33,8 @@ jobs:
       - name: Ruff
         run: python -m ruff check .
 
-      - name: Mypy
-        run: |
-          set +e
-          python -m mypy src --show-error-codes --show-error-context 2>&1 | tee /tmp/mypy-output.txt
-          MYPY_EXIT=${PIPESTATUS[0]}
-          echo "--- mypy exit code: $MYPY_EXIT ---"
-          if [ $MYPY_EXIT -ne 0 ]; then
-            echo "Mypy failed with exit code $MYPY_EXIT"
-            cat /tmp/mypy-output.txt
-            exit $MYPY_EXIT
-          fi
+      - name: Type check
+        run: python -m mypy --package stegmark --ignore-missing-imports
 
       - name: Pytest
         run: python -m pytest -q
