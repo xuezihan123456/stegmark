@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StegMark — Pyodide 浏览器水印演示 / Browser Watermark Demo</title>
+  <style>
+    /* ── 基础重置 / Base reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f1117;
+      --surface:   #1a1d27;
+      --border:    #2e3247;
+      --accent:    #6c63ff;
+      --accent-h:  #857dff;
+      --success:   #3ecf8e;
+      --warn:      #f6a623;
+      --danger:    #f06565;
+      --text:      #e2e4f0;
+      --muted:     #7b82a8;
+      --radius:    10px;
+      --shadow:    0 4px 24px rgba(0,0,0,.45);
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* ── 页头 / Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -.5px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    header p.subtitle {
+      margin-top: .4rem;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    /* ── 主布局 / Main layout ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.75rem 2rem;
+      width: 100%;
+      max-width: 700px;
+      margin-bottom: 1.25rem;
+    }
+    .card h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 1rem;
+    }
+
+    /* ── 状态条 / Status bar ── */
+    #status-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .75rem 1.25rem;
+      width: 100%;
+      max-width: 700px;
+      margin-bottom: 1.25rem;
+      font-size: .875rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    #status-bar .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--warn);
+      flex-shrink: 0;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    #status-bar.ready .dot   { background: var(--success); animation: none; }
+    #status-bar.error .dot   { background: var(--danger);  animation: none; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .35; }
+    }
+
+    /* ── 上传区 / Upload zone ── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--accent);
+      background: rgba(108,99,255,.06);
+    }
+    .upload-zone input[type="file"] { display: none; }
+    .upload-zone .icon { font-size: 2rem; margin-bottom: .5rem; }
+    .upload-zone .label-en { font-size: .9rem; color: var(--muted); }
+    .upload-zone .label-zh { font-size: .8rem; color: var(--muted); opacity: .7; }
+
+    /* ── Canvas 容器 / Canvas wrapper ── */
+    .canvas-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .canvas-wrap {
+      flex: 1 1 280px;
+      min-width: 0;
+    }
+    .canvas-wrap label {
+      display: block;
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: .4rem;
+    }
+    canvas {
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      display: block;
+      background: #0a0b10;
+    }
+
+    /* ── 输入组 / Input group ── */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+      margin-bottom: 1rem;
+    }
+    .field label { font-size: .875rem; color: var(--muted); }
+    .field input[type="text"] {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: .55rem .85rem;
+      font-size: .95rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .field input[type="text"]:focus { border-color: var(--accent); }
+
+    /* ── 按钮行 / Button row ── */
+    .btn-row {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    button {
+      flex: 1 1 140px;
+      padding: .65rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+    }
+    button:active { transform: scale(.97); }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-primary  { background: var(--accent);  color: #fff; }
+    .btn-primary:hover:not(:disabled)  { background: var(--accent-h); }
+    .btn-secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+    .btn-secondary:hover:not(:disabled) { background: rgba(108,99,255,.1); }
+    .btn-dl { background: var(--success); color: #0f1117; }
+    .btn-dl:hover:not(:disabled) { opacity: .85; }
+
+    /* ── 结果区 / Result area ── */
+    #result-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .75rem 1rem;
+      font-size: .9rem;
+      min-height: 2.5rem;
+      margin-top: 1rem;
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+    #result-box.ok   { border-color: var(--success); color: var(--success); }
+    #result-box.fail { border-color: var(--danger);  color: var(--danger);  }
+
+    /* ── 响应式 / Responsive ── */
+    @media (max-width: 480px) {
+      .card { padding: 1.25rem 1rem; }
+      header h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>StegMark WASM</h1>
+  <p class="subtitle">
+    浏览器端不可见水印演示 &nbsp;/&nbsp; Invisible Watermark Demo (Pyodide)
+  </p>
+</header>
+
+<!-- 运行时状态 / Runtime status -->
+<div id="status-bar">
+  <span class="dot"></span>
+  <span id="status-text">正在加载 Pyodide 运行时… / Loading Pyodide runtime…</span>
+</div>
+
+<!-- 文件上传卡 / Upload card -->
+<div class="card">
+  <h2>1. 选择图像 / Select Image</h2>
+  <div class="upload-zone" id="drop-zone">
+    <input type="file" id="file-input" accept="image/*" />
+    <div class="icon">🖼️</div>
+    <div>点击或拖拽图像文件 / Click or drag an image file</div>
+    <div class="label-en">PNG · JPEG · WebP · BMP</div>
+    <div class="label-zh">（建议 ≥ 256×256，最大 50 MP）</div>
+  </div>
+  <div class="canvas-row">
+    <div class="canvas-wrap">
+      <label>原图 / Original</label>
+      <canvas id="canvas-orig"></canvas>
+    </div>
+    <div class="canvas-wrap">
+      <label>水印图 / Watermarked</label>
+      <canvas id="canvas-wm"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- 水印操作卡 / Watermark ops card -->
+<div class="card">
+  <h2>2. 嵌入 / 提取 Watermark</h2>
+
+  <div class="field">
+    <label>载荷文本（UTF-8）/ Payload text (UTF-8)</label>
+    <input type="text" id="payload-input" value="StegMark WASM demo" />
+  </div>
+
+  <div class="field">
+    <label>强度 0.1–3.0 / Strength</label>
+    <input type="text" id="strength-input" value="1.0" />
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-primary"   id="btn-embed"   disabled>嵌入水印 / Embed</button>
+    <button class="btn-secondary" id="btn-extract" disabled>提取水印 / Extract</button>
+    <button class="btn-dl"        id="btn-download" disabled>下载图像 / Download</button>
+  </div>
+
+  <div id="result-box">—</div>
+</div>
+
+<!-- ────────────────────────────────────────────────────────────
+  本地构建后的使用方式 / Local wheel usage after build:
+
+  1. 构建 wheel（项目根目录）:
+       python -m build --wheel
+     生成文件位于 dist/stegmark-*.whl
+
+  2. 在下方 initializePyodide 之后添加:
+       await micropip.install("./dist/stegmark-0.x.x-py3-none-any.whl");
+       await micropip.install("numpy");
+
+  3. 将 pyodide_api 模块路径改为:
+       from stegmark.wasm.pyodide_api import embed_rgba, extract_rgba, capabilities
+────────────────────────────────────────────────────────────── -->
+
+<!-- Pyodide CDN -->
+<script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+<script>
+"use strict";
+
+// ── DOM refs ──────────────────────────────────────────────────────────────
+const statusBar   = document.getElementById("status-bar");
+const statusText  = document.getElementById("status-text");
+const dropZone    = document.getElementById("drop-zone");
+const fileInput   = document.getElementById("file-input");
+const canvasOrig  = document.getElementById("canvas-orig");
+const canvasWm    = document.getElementById("canvas-wm");
+const payloadInp  = document.getElementById("payload-input");
+const strengthInp = document.getElementById("strength-input");
+const btnEmbed    = document.getElementById("btn-embed");
+const btnExtract  = document.getElementById("btn-extract");
+const btnDownload = document.getElementById("btn-download");
+const resultBox   = document.getElementById("result-box");
+
+// ── 状态 / State ──────────────────────────────────────────────────────────
+let pyodide        = null;
+let originalImageData = null;   // ImageData of the original image
+let watermarkedRgba   = null;   // Uint8Array RGBA of watermarked result
+let imgWidth = 0, imgHeight = 0;
+
+// ── 设置状态条 / Set status bar ──────────────────────────────────────────
+function setStatus(msg, state = "") {
+  statusText.textContent = msg;
+  statusBar.className = state;
+}
+
+// ── 设置结果框 / Set result box ──────────────────────────────────────────
+function setResult(msg, ok = true) {
+  resultBox.textContent = msg;
+  resultBox.className = ok ? "ok" : "fail";
+}
+
+// ── 在 canvas 上显示图像 / Draw ImageData on canvas ─────────────────────
+function drawOnCanvas(canvas, imgData) {
+  canvas.width  = imgData.width;
+  canvas.height = imgData.height;
+  canvas.getContext("2d").putImageData(imgData, 0, 0);
+}
+
+// ── 从 RGBA Uint8Array 构造 ImageData ────────────────────────────────────
+function makeImageData(rgba, w, h) {
+  return new ImageData(new Uint8ClampedArray(rgba.buffer), w, h);
+}
+
+// ── 加载图像文件 / Load image file ───────────────────────────────────────
+function loadFile(file) {
+  if (!file || !file.type.startsWith("image/")) return;
+  const url = URL.createObjectURL(file);
+  const img  = new Image();
+  img.onload = () => {
+    imgWidth  = img.width;
+    imgHeight = img.height;
+
+    // 限制最大画布尺寸（前端保护）
+    if (imgWidth * imgHeight > 50_000_000) {
+      setResult("图像过大（> 50 MP）/ Image too large (> 50 MP)", false);
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    const offscreen = new OffscreenCanvas(imgWidth, imgHeight);
+    const ctx = offscreen.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    originalImageData = ctx.getImageData(0, 0, imgWidth, imgHeight);
+    URL.revokeObjectURL(url);
+
+    drawOnCanvas(canvasOrig, originalImageData);
+    // 清空水印 canvas
+    canvasWm.width = imgWidth;
+    canvasWm.height = imgHeight;
+    watermarkedRgba = null;
+    btnDownload.disabled = true;
+    resultBox.textContent = "—";
+    resultBox.className = "";
+
+    if (pyodide) {
+      btnEmbed.disabled   = false;
+      btnExtract.disabled = false;
+    }
+  };
+  img.src = url;
+}
+
+// ── 拖拽 / Drag-and-drop ──────────────────────────────────────────────────
+dropZone.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", e => loadFile(e.target.files[0]));
+dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("drag-over"); });
+dropZone.addEventListener("dragleave",   () => dropZone.classList.remove("drag-over"));
+dropZone.addEventListener("drop", e => {
+  e.preventDefault();
+  dropZone.classList.remove("drag-over");
+  loadFile(e.dataTransfer.files[0]);
+});
+
+// ── 嵌入水印 / Embed watermark ────────────────────────────────────────────
+btnEmbed.addEventListener("click", async () => {
+  if (!originalImageData || !pyodide) return;
+
+  const payloadText = payloadInp.value.trim();
+  const strength    = parseFloat(strengthInp.value) || 1.0;
+
+  if (!payloadText) { setResult("请输入载荷文本 / Enter payload text", false); return; }
+
+  btnEmbed.disabled   = true;
+  btnExtract.disabled = true;
+  setStatus("嵌入中… / Embedding…", "");
+  setResult("处理中… / Processing…", true);
+
+  try {
+    // 把 RGBA bytes 传入 Python（转为 bytes）
+    const rgbaBytes = originalImageData.data;
+    const rgbaJs    = Array.from(rgbaBytes);
+
+    // 把 payload 文本转为 UTF-8 bytes
+    const enc         = new TextEncoder();
+    const payloadJs   = Array.from(enc.encode(payloadText));
+
+    pyodide.globals.set("_rgba_list",    rgbaJs);
+    pyodide.globals.set("_payload_list", payloadJs);
+    pyodide.globals.set("_width",        imgWidth);
+    pyodide.globals.set("_height",       imgHeight);
+    pyodide.globals.set("_strength",     strength);
+
+    const result = await pyodide.runPythonAsync(`
+from stegmark.wasm.pyodide_api import embed_rgba
+_out = embed_rgba(
+    bytes(_rgba_list),
+    _width, _height,
+    bytes(_payload_list),
+    _strength,
+)
+list(_out)
+`);
+
+    watermarkedRgba = new Uint8Array(result.toJs());
+    const wmd = makeImageData(watermarkedRgba, imgWidth, imgHeight);
+    drawOnCanvas(canvasWm, wmd);
+
+    btnDownload.disabled = false;
+    setResult(`水印嵌入成功 / Watermark embedded ✓\n载荷: "${payloadText}"\n图像: ${imgWidth}×${imgHeight}px`, true);
+    setStatus("就绪 / Ready", "ready");
+  } catch (err) {
+    setResult(`嵌入失败 / Embed failed:\n${err.message}`, false);
+    setStatus("就绪 / Ready", "ready");
+  } finally {
+    btnEmbed.disabled   = false;
+    btnExtract.disabled = false;
+  }
+});
+
+// ── 提取水印 / Extract watermark ──────────────────────────────────────────
+btnExtract.addEventListener("click", async () => {
+  // 优先从水印图提取；若无水印图则从原图提取
+  const source = watermarkedRgba
+    ? Array.from(watermarkedRgba)
+    : Array.from(originalImageData.data);
+
+  if (!source.length || !pyodide) return;
+
+  btnEmbed.disabled   = true;
+  btnExtract.disabled = true;
+  setStatus("提取中… / Extracting…", "");
+  setResult("处理中… / Processing…", true);
+
+  try {
+    pyodide.globals.set("_rgba_list", source);
+    pyodide.globals.set("_width",     imgWidth);
+    pyodide.globals.set("_height",    imgHeight);
+
+    const result = await pyodide.runPythonAsync(`
+from stegmark.wasm.pyodide_api import extract_rgba
+_payload = extract_rgba(bytes(_rgba_list), _width, _height, 256)
+list(_payload) if _payload is not None else None
+`);
+
+    if (result === null || result === undefined) {
+      setResult("未检测到水印 / No watermark detected", false);
+    } else {
+      const payloadBytes = new Uint8Array(result.toJs());
+      const dec = new TextDecoder("utf-8", { fatal: false });
+      const text = dec.decode(payloadBytes);
+      setResult(`提取成功 / Extracted ✓\n载荷（hex）: ${payloadBytes.reduce((s,b)=>s+b.toString(16).padStart(2,"0"),"")}\n文本: "${text}"`, true);
+    }
+    setStatus("就绪 / Ready", "ready");
+  } catch (err) {
+    setResult(`提取失败 / Extract failed:\n${err.message}`, false);
+    setStatus("就绪 / Ready", "ready");
+  } finally {
+    btnEmbed.disabled   = false;
+    btnExtract.disabled = false;
+  }
+});
+
+// ── 下载水印图 / Download watermarked image ───────────────────────────────
+btnDownload.addEventListener("click", () => {
+  if (!watermarkedRgba) return;
+  const c   = document.createElement("canvas");
+  c.width   = imgWidth;
+  c.height  = imgHeight;
+  c.getContext("2d").putImageData(makeImageData(watermarkedRgba, imgWidth, imgHeight), 0, 0);
+  c.toBlob(blob => {
+    const a  = document.createElement("a");
+    a.href   = URL.createObjectURL(blob);
+    a.download = "stegmark_watermarked.png";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }, "image/png");
+});
+
+// ── 初始化 Pyodide / Initialise Pyodide ──────────────────────────────────
+(async () => {
+  try {
+    setStatus("加载 Pyodide… / Loading Pyodide…");
+    pyodide = await loadPyodide();
+
+    setStatus("安装 numpy… / Installing numpy…");
+    await pyodide.loadPackage("numpy");
+
+    // ── 本地 wheel 安装步骤（构建后取消注释）
+    // Local wheel install — uncomment after building:
+    //
+    //   import micropip
+    //   await micropip.install("../../dist/stegmark-0.3.0a1-py3-none-any.whl")
+    //
+    // 当前 Demo 模式：将 stegmark.wasm.pyodide_api 关键逻辑内联加载
+    // Current Demo mode: inline the pyodide_api module into Pyodide's VFS
+
+    // ── 将 pyodide_api 代码注入 Pyodide 虚拟文件系统（无 wheel 时的演示方式）
+    // Inject pyodide_api source into Pyodide's virtual FS for demo without wheel
+    const apiSource = await fetch("pyodide_api_inline.py")
+      .then(r => r.ok ? r.text() : null)
+      .catch(() => null);
+
+    if (apiSource) {
+      pyodide.FS.writeFile("/pyodide_api_inline.py", apiSource);
+      await pyodide.runPythonAsync("import pyodide_api_inline");
+    } else {
+      // Fallback: 尝试直接 import（wheel 已安装时生效）
+      // Fallback: try direct import (works when wheel is installed)
+      await pyodide.runPythonAsync(`
+try:
+    from stegmark.wasm.pyodide_api import embed_rgba, extract_rgba, capabilities
+    _caps = capabilities()
+except ImportError:
+    raise ImportError(
+        "stegmark wheel not installed. "
+        "Build with 'python -m build --wheel' then serve with micropip.install()."
+    )
+`);
+    }
+
+    setStatus("就绪 / Ready — Pyodide 加载完成", "ready");
+
+    if (originalImageData) {
+      btnEmbed.disabled   = false;
+      btnExtract.disabled = false;
+    }
+  } catch (err) {
+    setStatus(`加载失败 / Load failed: ${err.message}`, "error");
+  }
+})();
+</script>
+</body>
+</html>

@@ -60,7 +60,7 @@ def test_audio_engine_round_trip_recovers_byte(tmp_path: Path):
     engine.embed(src, payload_bits, out)
     recovered = engine.extract(out, num_bits=8)
 
-    matches = sum(1 for a, b in zip(payload_bits, recovered) if a == b)
+    matches = sum(1 for a, b in zip(payload_bits, recovered, strict=False) if a == b)
     assert matches >= 7  # noise carrier is friendly to echo-hiding
 
 

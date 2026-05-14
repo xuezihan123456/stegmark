@@ -113,9 +113,8 @@ def test_ecc_codec_encoded_length_helper():
 
 
 def test_ecc_codec_rejects_unknown_level():
-    codec = ECCCodec()
-
     class FakeLevel:
         value = 99
+
     with pytest.raises(ValueError):
         ECCCodec.encoded_length(8, FakeLevel)  # type: ignore[arg-type]

@@ -25,7 +25,7 @@ _TOKEN_PATTERN = re.compile(r"(\s+)")
 
 
 def _hash_bit(key: int, index: int) -> int:
-    digest = hashlib.sha256(f"{key}|{index}".encode("utf-8")).digest()
+    digest = hashlib.sha256(f"{key}|{index}".encode()).digest()
     return digest[0] & 1
 
 

@@ -75,7 +75,11 @@ class AudioWatermarkEngine:
 
         clipped = np.clip(watermarked, -32768, 32767).astype(np.int16)
         self._write_wav(out_path, clipped, params)
-        return AudioEmbedResult(output_path=out_path, capacity_used_bits=len(bits), segment_samples=self.segment_samples)
+        return AudioEmbedResult(
+            output_path=out_path,
+            capacity_used_bits=len(bits),
+            segment_samples=self.segment_samples,
+        )
 
     def extract(
         self,

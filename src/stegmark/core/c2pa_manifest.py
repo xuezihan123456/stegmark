@@ -60,7 +60,11 @@ class C2PAManifestBuilder:
     def add_creator(self, name: str, identifier: str) -> Self:
         assertion = C2PAAssertion(
             label="stds.schema-org.CreativeWork",
-            data={"@context": "https://schema.org", "@type": "CreativeWork", "author": {"name": name, "identifier": identifier}},
+            data={
+                "@context": "https://schema.org",
+                "@type": "CreativeWork",
+                "author": {"name": name, "identifier": identifier},
+            },
         ).with_hash()
         self.assertions.append(assertion)
         return self
